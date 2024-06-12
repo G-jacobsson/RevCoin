@@ -4,8 +4,10 @@
   "description": "RevCoin Server application",
   "main": "server.mjs",
   "scripts": {
+    "test": "vitest",
     "start": "node server.mjs",
-    "dev": "nodemon server.mjs"
+    "dev": "nodemon server.mjs",
+    "dev-node": "cross-env nodemon server.mjs"
   },
   "author": "G-O Jacobsson",
   "license": "ISC",
