@@ -1,4 +1,5 @@
 import Block from './Block.mjs';
+import { createHash } from '../utils/cipherHash.mjs';
 
 export default class Blockchain {
   constructor() {
@@ -16,22 +17,60 @@ export default class Blockchain {
   }
 
   getLastBlock() {
-    return this.chain.at(-1);
+    return this.chain[this.chain.length - 1];
   }
 
-  addBlock(transaction) {
+  addBlock(transactions) {
     const lastBlock = this.getLastBlock();
-    const nonce = 0;
-    const block = new Block(
+    const { nonce, difficulty, timestamp, hash } = this.proofOfWork(
+      lastBlock.hash,
+      transactions
+    );
+
+    const newBlock = new Block(
       lastBlock.index + 1,
-      Date.now(),
-      transaction,
-      lastBlock.difficulty,
+      timestamp,
+      transactions,
+      difficulty,
       nonce,
       lastBlock.hash
     );
 
-    this.chain.push(block);
-    return block;
+    newBlock.hash = hash;
+    this.chain.push(newBlock);
+    return newBlock;
+  }
+
+  proofOfWork(previousHash, data) {
+    const latestBlock = this.getLastBlock();
+    let difficulty, hash, timestamp;
+    let nonce = 1024;
+
+    do {
+      nonce++;
+      timestamp = Date.now();
+      difficulty = this.difficultyAdjustment(latestBlock, timestamp);
+
+      hash = createHash(
+        latestBlock.index + 1,
+        previousHash,
+        timestamp,
+        JSON.stringify(data),
+        nonce,
+        difficulty
+      );
+    } while (hash.substring(0, difficulty) !== '0'.repeat(difficulty));
+
+    return { nonce, difficulty, timestamp, hash };
+  }
+
+  difficultyAdjustment(latestBlock, timestamp) {
+    const MINE_RATE = +process.env.MINE_RATE;
+    let { difficulty } = latestBlock;
+    const timeTaken = timestamp - latestBlock.timestamp;
+
+    if (difficulty < 1) return 1;
+
+    return timeTaken > MINE_RATE ? difficulty + 1 : difficulty - 1;
   }
 }
