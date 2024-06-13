@@ -5,7 +5,7 @@ export default class Block {
     this.index = index;
     this.timestamp = timestamp;
     this.data = data;
-    this.difficulty = difficulty;
+    this.difficulty = difficulty || +process.env.DIFFICULTY;
     this.nonce = nonce;
     this.previousHash = previousHash;
     this.hash = this.calculateHash();
