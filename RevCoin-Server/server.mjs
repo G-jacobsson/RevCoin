@@ -14,6 +14,7 @@ const block = blockchain.addBlock({
   recipient: 'Bob',
 });
 console.log(block);
+console.log(blockchain);
 
 const app = express();
 
