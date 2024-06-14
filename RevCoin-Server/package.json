@@ -7,7 +7,7 @@
     "test": "vitest",
     "start": "node server.mjs",
     "dev": "nodemon server.mjs",
-    "dev-node": "cross-env nodemon server.mjs"
+    "dev-node": "DYNAMIC_NODE_PORT=true cross-env nodemon server.mjs"
   },
   "author": "G-O Jacobsson",
   "license": "ISC",

@@ -21,10 +21,17 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-const PORT = process.env.PORT || 5010;
+const PORT = +process.env.PORT || 5010;
+const PRIMARY_NODE = `http://localhost:${PORT}`;
 
-app.listen(PORT, () =>
+let nodePort =
+  process.env.DYNAMIC_NODE_PORT === 'true'
+    ? PORT + Math.floor(Math.random() * 1000)
+    : PORT;
+
+app.listen(nodePort, () =>
   console.log(
-    `Server is running on port: ${PORT} in ${process.env.NODE_ENV} mode`.bgGreen
+    `Server is running on port: ${nodePort} in ${process.env.NODE_ENV} mode`
+      .bgGreen
   )
 );
