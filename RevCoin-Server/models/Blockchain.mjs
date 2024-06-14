@@ -9,7 +9,7 @@ export default class Blockchain {
   genesisBlock() {
     return {
       index: 0,
-      timestamp: Date.now(),
+      timestamp: 1,
       data: 'Genesis Block',
       difficulty: +process.env.DIFFICULTY,
       hash: '0',
