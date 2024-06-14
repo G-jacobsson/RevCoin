@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import colors from 'colors';
 import Blockchain from './models/Blockchain.mjs';
+import blockchainRouter from './routes/blockchain-routes.mjs';
 
 dotenv.config({ path: './config/config.env' });
 
@@ -28,6 +29,8 @@ let nodePort =
   process.env.DYNAMIC_NODE_PORT === 'true'
     ? PORT + Math.floor(Math.random() * 1000)
     : PORT;
+
+app.use('/api/v1/RevCoin/blockchain', blockchainRouter);
 
 app.listen(nodePort, () =>
   console.log(
