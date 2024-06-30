@@ -4,11 +4,13 @@ import cors from 'cors';
 import colors from 'colors';
 import Blockchain from './models/Blockchain.mjs';
 import blockchainRouter from './routes/blockchain-routes.mjs';
+import Wallet from './models/Wallet.mjs';
 
 dotenv.config({ path: './config/config.env' });
 
 export const blockchain = new Blockchain();
-console.log(blockchain);
+export const wallet = new Wallet();
+console.log(blockchain, wallet);
 const block = blockchain.addBlock({
   amount: 5,
   sender: 'Alice',

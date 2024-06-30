@@ -1,5 +1,5 @@
 import Block from './Block.mjs';
-import { createHash } from '../utils/cipherHash.mjs';
+import { generateHash } from '../utils/cipherHash.mjs';
 
 export default class Blockchain {
   constructor() {
@@ -51,7 +51,7 @@ export default class Blockchain {
       timestamp = Date.now();
       difficulty = this.difficultyAdjustment(latestBlock, timestamp);
 
-      hash = createHash(
+      hash = generateHash(
         latestBlock.index + 1,
         previousHash,
         timestamp,
