@@ -1,4 +1,4 @@
-import { createHash } from '../utils/cipherHash.mjs';
+import { generateHash } from '../utils/cipherHash.mjs';
 
 export default class Block {
   constructor(index, timestamp, data, difficulty, nonce, previousHash = '') {
@@ -12,7 +12,7 @@ export default class Block {
   }
 
   calculateHash() {
-    return createHash(
+    return generateHash(
       this.index,
       this.timestamp,
       JSON.stringify(this.data),
