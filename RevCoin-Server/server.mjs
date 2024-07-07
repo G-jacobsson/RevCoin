@@ -5,19 +5,46 @@ import colors from 'colors';
 import Blockchain from './models/Blockchain.mjs';
 import blockchainRouter from './routes/blockchain-routes.mjs';
 import Wallet from './models/Wallet.mjs';
+import TransactionPool from './models/TransactionPool.mjs';
+import Miner from './models/Miner.mjs';
 
 dotenv.config({ path: './config/config.env' });
 
 export const blockchain = new Blockchain();
-export const wallet = new Wallet();
-console.log(blockchain, wallet);
-const block = blockchain.addBlock({
-  amount: 5,
-  sender: 'Alice',
-  recipient: 'Bob',
+export const transactionPool = new TransactionPool();
+export const minerWallet = new Wallet();
+
+const miner = new Miner({
+  blockchain,
+  transactionPool,
+  wallet: minerWallet,
 });
-console.log(block);
-console.log(blockchain);
+
+const simulateTransactionsAndMining = async () => {
+  const wallet1 = new Wallet();
+  const wallet2 = new Wallet();
+
+  const transaction1 = wallet1.createTransaction({
+    recipient: wallet2.publicKey,
+    amount: 10,
+    blockchain,
+  });
+
+  const transaction2 = wallet2.createTransaction({
+    recipient: wallet1.publicKey,
+    amount: 5,
+    blockchain,
+  });
+
+  transactionPool.addTransaction(transaction1);
+  transactionPool.addTransaction(transaction2);
+
+  const newBlock = miner.mineTransactions();
+
+  console.log('New block mined:', newBlock);
+};
+
+simulateTransactionsAndMining();
 
 const app = express();
 
