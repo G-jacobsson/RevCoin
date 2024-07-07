@@ -1,44 +1,28 @@
-import Block from './Block.mjs';
 import { generateHash } from '../utils/cipherHash.mjs';
+import Block from './Block.mjs';
+import Transaction from './Transaction.mjs';
+import TransactionPool from './TransactionPool.mjs';
 
 export default class Blockchain {
   constructor() {
     this.chain = [this.genesisBlock()];
+    this.transactionPool = new TransactionPool();
+    this.pendingTransactions = [];
   }
 
   genesisBlock() {
-    return {
-      index: 0,
-      timestamp: 1,
-      data: 'Genesis Block',
-      difficulty: +process.env.DIFFICULTY,
-      hash: '0',
-    };
+    return new Block(
+      0,
+      '0',
+      Date.now(),
+      'Genesis Block',
+      0,
+      +process.env.DIFFICULTY
+    );
   }
 
   getLastBlock() {
     return this.chain[this.chain.length - 1];
-  }
-
-  addBlock(transactions) {
-    const lastBlock = this.getLastBlock();
-    const { nonce, difficulty, timestamp, hash } = this.proofOfWork(
-      lastBlock.hash,
-      transactions
-    );
-
-    const newBlock = new Block(
-      lastBlock.index + 1,
-      timestamp,
-      transactions,
-      difficulty,
-      nonce,
-      lastBlock.hash
-    );
-
-    newBlock.hash = hash;
-    this.chain.push(newBlock);
-    return newBlock;
   }
 
   proofOfWork(previousHash, data) {
@@ -72,5 +56,75 @@ export default class Blockchain {
     if (difficulty < 1) return 1;
 
     return timeTaken > MINE_RATE ? difficulty + 1 : difficulty - 1;
+  }
+
+  addBlock(transactions) {
+    const lastBlock = this.getLastBlock();
+    const { nonce, difficulty, timestamp, hash } = this.proofOfWork(
+      lastBlock.hash,
+      transactions
+    );
+
+    const newBlock = new Block(
+      lastBlock.index + 1,
+      lastBlock.hash,
+      timestamp,
+      transactions,
+      nonce,
+      difficulty
+    );
+
+    newBlock.hash = hash;
+    this.chain.push(newBlock);
+    return newBlock;
+  }
+
+  minePendingTransactions() {
+    const validTransactions = this.transactionPool.validTransactions();
+
+    if (validTransactions.length === 0) {
+      throw new Error('No valid transactions to mine');
+    }
+
+    const rewardTransaction = this.createRewardTransaction();
+    validTransactions.push(rewardTransaction);
+
+    const block = this.addBlock(validTransactions);
+    this.transactionPool.clear();
+    return block;
+  }
+
+  createRewardTransaction() {
+    const rewardTransaction = new Transaction({
+      senderWallet: { publicKey: 'system' },
+      recipient: this.minerPublicKey,
+      amount: 50, // reward amount
+    });
+    return rewardTransaction;
+  }
+
+  addTransaction(transaction) {
+    if (!Transaction.validateTransaction(transaction)) {
+      throw new Error('Invalid transaction');
+    }
+
+    this.transactionPool.setTransaction(transaction);
+  }
+
+  syncChains(newChain) {
+    if (newChain.length <= this.chain.length) {
+      throw new Error('Received chain is not longer than current chain');
+    }
+
+    if (!this.validateChain(newChain)) {
+      throw new Error('Received chain is invalid');
+    }
+
+    this.chain = newChain;
+    this.transactionPool.clearBlockchainTransactions({ chain: newChain });
+  }
+
+  validateChain(chain) {
+    // Implement validation logic for the entire chain
   }
 }
