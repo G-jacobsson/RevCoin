@@ -21,18 +21,19 @@ export default class Wallet {
         }
 
         const addressOutput = transaction.outputMap[address];
-
-        if (addressOutput) {
+        if (addressOutput !== undefined) {
           outputsTotal += addressOutput;
         }
       }
 
-      if (hasConductedTransaction) break;
-
-      return hasConductedTransaction
-        ? outputsTotal
-        : +process.env.INITIAL_WALLET_BALANCE + outputsTotal;
+      if (hasConductedTransaction) {
+        break;
+      }
     }
+
+    return hasConductedTransaction
+      ? outputsTotal
+      : +process.env.INITIAL_WALLET_BALANCE + outputsTotal;
   }
 
   sign(data) {
@@ -51,10 +52,12 @@ export default class Wallet {
       throw new Error('Amount exceeds balance');
     }
 
-    return new Transaction({
+    const transaction = new Transaction({
       sender: this,
       recipient,
       amount,
     });
+
+    return transaction;
   }
 }

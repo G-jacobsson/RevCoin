@@ -94,15 +94,6 @@ export default class Blockchain {
     return block;
   }
 
-  createRewardTransaction() {
-    const rewardTransaction = new Transaction({
-      senderWallet: { publicKey: 'system' },
-      recipient: this.minerPublicKey,
-      amount: 50, // reward amount
-    });
-    return rewardTransaction;
-  }
-
   addTransaction(transaction) {
     if (!Transaction.validateTransaction(transaction)) {
       throw new Error('Invalid transaction');

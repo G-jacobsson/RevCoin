@@ -1,15 +1,17 @@
+import Transaction from './Transaction.mjs';
+
 export default class TransactionPool {
   constructor() {
     this.transactionMap = {};
   }
 
   setTransaction(transaction) {
-    this.transactionMap[transaction.id] = transaction;
+    this.transactionMap[transaction.transactionId] = transaction;
   }
 
   existingTransaction({ inputAddress }) {
     return Object.values(this.transactionMap).find(
-      (transaction) => transaction.input.address === inputAddress
+      (transaction) => transaction.inputMap.address === inputAddress
     );
   }
 

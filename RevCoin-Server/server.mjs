@@ -7,6 +7,7 @@ import blockchainRouter from './routes/blockchain-routes.mjs';
 import Wallet from './models/Wallet.mjs';
 import TransactionPool from './models/TransactionPool.mjs';
 import Miner from './models/Miner.mjs';
+import Transaction from './models/Transaction.mjs';
 
 dotenv.config({ path: './config/config.env' });
 
@@ -24,24 +25,45 @@ const simulateTransactionsAndMining = async () => {
   const wallet1 = new Wallet();
   const wallet2 = new Wallet();
 
-  const transaction1 = wallet1.createTransaction({
-    recipient: wallet2.publicKey,
-    amount: 10,
-    blockchain,
-  });
+  try {
+    const transaction1 = wallet1.createTransaction({
+      recipient: wallet2.publicKey,
+      amount: 10,
+      blockchain,
+    });
 
-  const transaction2 = wallet2.createTransaction({
-    recipient: wallet1.publicKey,
-    amount: 5,
-    blockchain,
-  });
+    const transaction2 = wallet2.createTransaction({
+      recipient: wallet1.publicKey,
+      amount: 5,
+      blockchain,
+    });
 
-  transactionPool.addTransaction(transaction1);
-  transactionPool.addTransaction(transaction2);
+    if (
+      !Transaction.validateTransaction(transaction1) ||
+      !Transaction.validateTransaction(transaction2)
+    ) {
+      throw new Error('Invalid transaction');
+    }
 
-  const newBlock = miner.mineTransactions();
+    transactionPool.setTransaction(transaction1);
+    transactionPool.setTransaction(transaction2);
 
-  console.log('New block mined:', newBlock);
+    // console.log(
+    //   'Transactions added to the pool:',
+    //   transactionPool.transactionMap
+    // );
+
+    const newBlock = miner.mineTransactions();
+
+    if (newBlock) {
+      console.log('New block mined:', newBlock);
+      console.log('BLOCKCHAIN:', blockchain.chain);
+    } else {
+      console.log('No block was mined');
+    }
+  } catch (error) {
+    console.error('Error in transactions or mining:', error);
+  }
 };
 
 simulateTransactionsAndMining();

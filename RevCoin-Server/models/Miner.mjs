@@ -1,8 +1,13 @@
+// Miner.mjs
+
+import { minerWallet } from '../server.mjs';
+import Transaction from './Transaction.mjs';
+
 export default class Miner {
-  constructor({ blockchain, transactionPool, wallet, pubNubServer }) {
+  constructor({ blockchain, transactionPool, minerWallet, pubNubServer }) {
     this.blockchain = blockchain;
     this.transactionPool = transactionPool;
-    this.wallet = wallet;
+    this.minerWallet = minerWallet;
     this.pubNubServer = pubNubServer;
   }
 
@@ -28,10 +33,11 @@ export default class Miner {
 
   createRewardTransaction() {
     const rewardTransaction = new Transaction({
-      senderWallet: { publicKey: 'system' },
-      recipient: this.wallet.publicKey,
+      sender: minerWallet,
+      recipient: minerWallet.publicKey,
       amount: 50,
     });
+
     return rewardTransaction;
   }
 }
