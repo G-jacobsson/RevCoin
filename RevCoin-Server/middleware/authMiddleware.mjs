@@ -1,6 +1,6 @@
 // middleware/authMiddleware.mjs
 import jwt from 'jsonwebtoken';
-import User from '../models/UserModel.mjs';
+import User from '../models/User.mjs';
 
 export const protect = async (req, res, next) => {
   let token;

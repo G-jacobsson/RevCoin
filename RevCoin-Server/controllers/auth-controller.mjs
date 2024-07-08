@@ -1,5 +1,5 @@
 // controllers/authController.mjs
-import User from '../models/UserModel.mjs';
+import User from '../models/User.mjs';
 
 // @desc    Register user
 // @route   POST /api/v1/auth/register

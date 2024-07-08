@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import colors from 'colors';
 import Blockchain from './models/Blockchain.mjs';
+import authRouter from './routes/auth-routes.mjs';
 import blockchainRouter from './routes/blockchain-routes.mjs';
 import Wallet from './models/Wallet.mjs';
 import TransactionPool from './models/TransactionPool.mjs';
@@ -84,6 +85,7 @@ let nodePort =
     ? PORT + Math.floor(Math.random() * 1000)
     : PORT;
 
+app.use('/api/v1/RevCoin/auth', authRouter);
 app.use('/api/v1/RevCoin/blockchain', blockchainRouter);
 
 app.listen(nodePort, () =>
