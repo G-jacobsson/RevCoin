@@ -8,8 +8,11 @@ import Wallet from './models/Wallet.mjs';
 import TransactionPool from './models/TransactionPool.mjs';
 import Miner from './models/Miner.mjs';
 import Transaction from './models/Transaction.mjs';
+import connectDB from './config/mongoDb.mjs';
 
 dotenv.config({ path: './config/config.env' });
+
+connectDB();
 
 export const blockchain = new Blockchain();
 export const transactionPool = new TransactionPool();
