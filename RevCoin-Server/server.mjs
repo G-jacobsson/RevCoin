@@ -10,6 +10,7 @@ import TransactionPool from './models/TransactionPool.mjs';
 import Miner from './models/Miner.mjs';
 import Transaction from './models/Transaction.mjs';
 import connectDB from './config/mongoDb.mjs';
+import morgan from 'morgan';
 
 dotenv.config({ path: './config/config.env' });
 
@@ -76,6 +77,8 @@ const app = express();
 
 app.use(express.json());
 app.use(cors());
+
+app.use(morgan('dev'));
 
 const PORT = +process.env.PORT || 5010;
 const PRIMARY_NODE = `http://localhost:${PORT}`;
