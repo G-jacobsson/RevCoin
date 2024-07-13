@@ -21,7 +21,7 @@ const transactionSchema = new mongoose.Schema({
   },
   inputMap: {
     timestamp: {
-      type: Date,
+      type: Number, // Changed from Date to Number
       required: true,
     },
     amount: {

@@ -1,4 +1,3 @@
-// models/Block.mjs
 import mongoose from 'mongoose';
 import { generateHash } from '../utils/cipherHash.mjs';
 
@@ -12,7 +11,7 @@ const blockSchema = new mongoose.Schema({
     required: true,
   },
   timestamp: {
-    type: Date,
+    type: Number, // Changed from Date to Number
     required: true,
   },
   data: {

@@ -133,7 +133,7 @@ export default class Blockchain {
   }
 
   addTransaction(transaction) {
-    if (!Transaction.validateTransaction(transaction)) {
+    if (!transaction.validateTransaction(transaction)) {
       throw new Error('Invalid transaction');
     }
 
