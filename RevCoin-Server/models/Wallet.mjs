@@ -20,7 +20,7 @@ export default class Wallet {
           hasConductedTransaction = true;
         }
 
-        const addressOutput = transaction.outputMap[address];
+        const addressOutput = transaction.outputMap.get(address);
         if (addressOutput !== undefined) {
           outputsTotal += addressOutput;
         }
@@ -37,7 +37,7 @@ export default class Wallet {
   }
 
   sign(data) {
-    return this.keyPair.sign(generateHash(data));
+    return this.keyPair.sign(generateHash(data)).toDER('hex');
   }
 
   createTransaction({ recipient, amount, blockchain }) {
@@ -53,9 +53,19 @@ export default class Wallet {
     }
 
     const transaction = new Transaction({
-      sender: this,
+      sender: this.publicKey,
       recipient,
       amount,
+    });
+
+    const outputMap = new Map();
+    outputMap.set(recipient, amount);
+    outputMap.set(this.publicKey, this.balance - amount); // Include sender's remaining balance
+    transaction.outputMap = outputMap;
+
+    transaction.inputMap = transaction.createInputMap({
+      senderWallet: this,
+      outputMap: transaction.outputMap,
     });
 
     return transaction;

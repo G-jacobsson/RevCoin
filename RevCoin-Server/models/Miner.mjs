@@ -1,17 +1,16 @@
-// Miner.mjs
-
+// models/Miner.mjs
 import { minerWallet } from '../server.mjs';
 import Transaction from './Transaction.mjs';
+import Blockchain from './Blockchain.mjs';
 
 export default class Miner {
-  constructor({ blockchain, transactionPool, minerWallet, pubNubServer }) {
+  constructor({ blockchain, transactionPool, wallet }) {
     this.blockchain = blockchain;
     this.transactionPool = transactionPool;
-    this.minerWallet = minerWallet;
-    this.pubNubServer = pubNubServer;
+    this.minerWallet = wallet;
   }
 
-  mineTransactions() {
+  async mineTransactions() {
     const validTransactions = this.transactionPool.validTransactions();
 
     if (validTransactions.length === 0) {
@@ -22,7 +21,7 @@ export default class Miner {
     const rewardTransaction = this.createRewardTransaction();
     validTransactions.push(rewardTransaction);
 
-    const block = this.blockchain.addBlock(validTransactions);
+    const block = await this.blockchain.addBlock(validTransactions);
 
     // this.pubNubServer.broadcastChain();
 
@@ -33,7 +32,7 @@ export default class Miner {
 
   createRewardTransaction() {
     const rewardTransaction = new Transaction({
-      sender: minerWallet,
+      sender: 'MINER_REWARD',
       recipient: minerWallet.publicKey,
       amount: 50,
     });

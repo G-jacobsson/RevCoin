@@ -1,24 +1,49 @@
-import { generateHash } from '../utils/cipherHash.mjs';
+// models/Blockchain.mjs
+import mongoose from 'mongoose';
 import Block from './Block.mjs';
-import Transaction from './Transaction.mjs';
 import TransactionPool from './TransactionPool.mjs';
+import { generateHash } from '../utils/cipherHash.mjs';
 
 export default class Blockchain {
   constructor() {
-    this.chain = [this.genesisBlock()];
+    this.chain = [];
     this.transactionPool = new TransactionPool();
     this.pendingTransactions = [];
   }
 
-  genesisBlock() {
-    return new Block(
-      0,
-      '0',
-      Date.now(),
-      'Genesis Block',
-      0,
-      +process.env.DIFFICULTY
+  async initialize() {
+    const genesisBlock = await this.getOrCreateGenesisBlock();
+    this.chain.push(genesisBlock);
+  }
+
+  async getOrCreateGenesisBlock() {
+    const existingGenesis = await Block.findOne({ index: 0 });
+    if (existingGenesis) {
+      return existingGenesis;
+    }
+
+    const genesisBlockData = {
+      index: 0,
+      previousHash: '0',
+      timestamp: Date.now(),
+      data: ['Genesis Block'],
+      nonce: 0,
+      difficulty: +process.env.DIFFICULTY,
+      hash: '',
+    };
+
+    genesisBlockData.hash = generateHash(
+      genesisBlockData.index,
+      genesisBlockData.previousHash,
+      genesisBlockData.timestamp,
+      JSON.stringify(genesisBlockData.data),
+      genesisBlockData.nonce,
+      genesisBlockData.difficulty
     );
+
+    const genesisBlock = new Block(genesisBlockData);
+    await genesisBlock.save();
+    return genesisBlock;
   }
 
   getLastBlock() {
@@ -58,25 +83,38 @@ export default class Blockchain {
     return timeTaken > MINE_RATE ? difficulty + 1 : difficulty - 1;
   }
 
-  addBlock(transactions) {
+  async addBlock(transactions) {
     const lastBlock = this.getLastBlock();
     const { nonce, difficulty, timestamp, hash } = this.proofOfWork(
       lastBlock.hash,
       transactions
     );
 
-    const newBlock = new Block(
-      lastBlock.index + 1,
-      lastBlock.hash,
+    const newBlockData = {
+      index: lastBlock.index + 1,
+      previousHash: lastBlock.hash,
       timestamp,
-      transactions,
+      data: transactions,
       nonce,
-      difficulty
-    );
+      difficulty,
+      hash,
+    };
 
-    newBlock.hash = hash;
+    const newBlock = new Block(newBlockData);
+    await newBlock.save();
+
     this.chain.push(newBlock);
     return newBlock;
+  }
+
+  async saveTransactions(transactions) {
+    const transactionIds = [];
+    for (const tx of transactions) {
+      const transaction = new Transaction(tx);
+      await transaction.save();
+      transactionIds.push(transaction._id);
+    }
+    return transactionIds;
   }
 
   minePendingTransactions() {
