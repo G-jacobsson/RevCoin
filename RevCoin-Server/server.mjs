@@ -9,6 +9,7 @@ import Wallet from './models/Wallet.mjs';
 import TransactionPool from './models/TransactionPool.mjs';
 import Miner from './models/Miner.mjs';
 import Transaction from './models/Transaction.mjs';
+import PubNubService from './pubnubServer.mjs'; // Import PubNub service
 
 dotenv.config({ path: './config/config.env' });
 
@@ -25,6 +26,8 @@ const miner = new Miner({
   transactionPool,
   wallet: minerWallet,
 });
+
+PubNubService.subscribeToChannel('BLOCKCHAIN'); // Subscribe to the blockchain channel
 
 const simulateTransactionsAndMining = async () => {
   const wallet1 = new Wallet();
@@ -65,6 +68,7 @@ const simulateTransactionsAndMining = async () => {
 
     if (newBlock) {
       console.log('New block mined:', newBlock);
+      PubNubService.publishToChannel('BLOCKCHAIN', newBlock); // Publish the new block
     } else {
       console.log('No block was mined');
     }
