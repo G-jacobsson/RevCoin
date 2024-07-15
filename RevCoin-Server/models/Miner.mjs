@@ -1,6 +1,6 @@
 import { minerWallet } from '../server.mjs';
 import Transaction from './Transaction.mjs';
-import PubNubService from '../pubnubServer.mjs'; // Import PubNub service
+import PubNubService from '../pubnubServer.mjs';
 
 export default class Miner {
   constructor({ blockchain, transactionPool, wallet }) {
@@ -22,7 +22,7 @@ export default class Miner {
 
     const block = await this.blockchain.addBlock(validTransactions);
 
-    PubNubService.publishToChannel('BLOCKCHAIN', block); // Publish the new block
+    PubNubService.publishToChannel('BLOCKCHAIN', block);
 
     this.transactionPool.clear();
 

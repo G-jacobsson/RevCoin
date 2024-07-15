@@ -1,5 +1,3 @@
-// models/Blockchain.mjs
-import mongoose from 'mongoose';
 import Block from './Block.mjs';
 import TransactionPool from './TransactionPool.mjs';
 import { generateHash } from '../utils/cipherHash.mjs';

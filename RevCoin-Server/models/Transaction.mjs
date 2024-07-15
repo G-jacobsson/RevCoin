@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { generateHash, verifySignature } from '../utils/cipherHash.mjs';
+import { verifySignature } from '../utils/cipherHash.mjs';
 
 const transactionSchema = new mongoose.Schema({
   sender: {
@@ -21,7 +21,7 @@ const transactionSchema = new mongoose.Schema({
   },
   inputMap: {
     timestamp: {
-      type: Number, // Changed from Date to Number
+      type: Number,
       required: true,
     },
     amount: {
@@ -42,7 +42,7 @@ const transactionSchema = new mongoose.Schema({
 transactionSchema.methods.createOutputMap = function () {
   const outputMap = new Map();
   outputMap.set(this.recipient, this.amount);
-  outputMap.set(this.sender, this.inputMap.amount - this.amount); // Include sender's remaining balance
+  outputMap.set(this.sender, this.inputMap.amount - this.amount);
   return outputMap;
 };
 
@@ -68,7 +68,6 @@ transactionSchema.statics.validateTransaction = function (transaction) {
     0
   );
 
-  // Add detailed logging
   console.log(`Validating transaction from ${address}:`);
   console.log(`Amount: ${amount}`);
   console.log(`Output Map:`, Array.from(outputMap.entries()));

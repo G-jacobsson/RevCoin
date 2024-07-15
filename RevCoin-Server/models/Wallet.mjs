@@ -60,7 +60,7 @@ export default class Wallet {
 
     const outputMap = new Map();
     outputMap.set(recipient, amount);
-    outputMap.set(this.publicKey, this.balance - amount); // Include sender's remaining balance
+    outputMap.set(this.publicKey, this.balance - amount);
     transaction.outputMap = outputMap;
 
     transaction.inputMap = transaction.createInputMap({

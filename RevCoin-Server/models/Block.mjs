@@ -11,7 +11,7 @@ const blockSchema = new mongoose.Schema({
     required: true,
   },
   timestamp: {
-    type: Number, // Changed from Date to Number
+    type: Number,
     required: true,
   },
   data: {

@@ -1,4 +1,3 @@
-// controllers/authController.mjs
 import User from '../models/User.mjs';
 
 // @desc    Register user

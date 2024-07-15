@@ -1,4 +1,3 @@
-// utils/cipherHash.mjs
 import crypto from 'crypto';
 import pkg from 'elliptic';
 
