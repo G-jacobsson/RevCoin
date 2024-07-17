@@ -1,36 +1,42 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { login } from '../services/revcoinApi';
-import '../styles/LoginPage.css';
+import { register } from '../services/revcoinApi';
+import '../styles/RegisterPage.css';
 
-const LoginPage = () => {
+const RegisterPage = () => {
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  const handleLogin = async (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
     setError('');
 
     try {
-      const data = await login(email, password);
-      console.log('Login success', data);
-      localStorage.setItem('token', data.token);
-    } catch (error) {
-      setError(error.message);
-      console.error('Login Error', error);
+      const data = await register(name, email, password);
+      console.log('Registration successful', data);
+      navigate('/');
+    } catch (err) {
+      setError(err.message);
+      console.error('Registration error', err);
     }
   };
 
-  const handleRegisterRedirect = () => {
-    navigate('/register');
-  };
-
   return (
-    <div className="login-page">
-      <h2>Login</h2>
-      <form onSubmit={handleLogin}>
+    <div className="register-page">
+      <h2>Register</h2>
+      <form onSubmit={handleRegister}>
+        <div className="form-group">
+          <label>Name:</label>
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+          />
+        </div>
         <div className="form-group">
           <label>Email:</label>
           <input
@@ -49,17 +55,11 @@ const LoginPage = () => {
             required
           />
         </div>
-        <button type="submit">Login</button>
+        <button type="submit">Register</button>
         {error && <p className="error">{error}</p>}
       </form>
-      <button
-        onClick={handleRegisterRedirect}
-        className="register-button"
-      >
-        Not registered? Sign up here
-      </button>
     </div>
   );
 };
 
-export default LoginPage;
+export default RegisterPage;
