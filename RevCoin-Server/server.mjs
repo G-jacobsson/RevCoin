@@ -6,6 +6,7 @@ import connectDB from './config/mongoDb.mjs';
 import Blockchain from './models/Blockchain.mjs';
 import blockchainRouter from './routes/blockchain-routes.mjs';
 import authRouter from './routes/auth-routes.mjs';
+import transactionRouter from './routes/transaction-routes.mjs';
 import Wallet from './models/Wallet.mjs';
 import TransactionPool from './models/TransactionPool.mjs';
 import Miner from './models/Miner.mjs';
@@ -95,6 +96,7 @@ let nodePort =
 
 app.use('/api/v1/RevCoin/blockchain', blockchainRouter);
 app.use('/api/v1/RevCoin/auth', authRouter);
+app.use('/api/v1/RevCoin/transactions', transactionRouter);
 
 app.listen(nodePort, () =>
   console.log(
