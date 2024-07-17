@@ -32,3 +32,30 @@ export const login = async (email, password) => {
 
   return response.json();
 };
+
+export const fetchTransactions = async () => {
+  const response = await fetch(`${BASE_URL}/transactions`);
+  const data = await response.json();
+  if (data.success) {
+    return data.data;
+  } else {
+    throw new Error(data.message);
+  }
+};
+
+export const createTransaction = async (transaction) => {
+  const response = await fetch(`${BASE_URL}/transactions`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${localStorage.getItem('token')}`,
+    },
+    body: JSON.stringify(transaction),
+  });
+  const data = await response.json();
+  if (data.success) {
+    return data.data;
+  } else {
+    throw new Error(data.message);
+  }
+};
