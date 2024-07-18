@@ -30,56 +30,7 @@ const miner = new Miner({
 });
 
 PubNubService.subscribeToChannel('BLOCKCHAIN');
-
-const simulateTransactionsAndMining = async () => {
-  const wallet1 = new Wallet();
-  const wallet2 = new Wallet();
-
-  try {
-    const transaction1 = wallet1.createTransaction({
-      recipient: wallet2.publicKey,
-      amount: 10,
-      blockchain,
-    });
-
-    const transaction2 = wallet2.createTransaction({
-      recipient: wallet1.publicKey,
-      amount: 5,
-      blockchain,
-    });
-
-    console.log('Transaction 1:', transaction1);
-    console.log('Transaction 2:', transaction2);
-
-    if (
-      !Transaction.validateTransaction(transaction1) ||
-      !Transaction.validateTransaction(transaction2)
-    ) {
-      throw new Error('Invalid transaction');
-    }
-
-    transactionPool.setTransaction(transaction1);
-    transactionPool.setTransaction(transaction2);
-
-    console.log(
-      'Transactions added to the pool:',
-      transactionPool.transactionMap
-    );
-
-    const newBlock = await miner.mineTransactions();
-
-    if (newBlock) {
-      console.log('New block mined:', newBlock);
-      PubNubService.publishToChannel('BLOCKCHAIN', newBlock);
-    } else {
-      console.log('No block was mined');
-    }
-  } catch (error) {
-    console.error('Error in transactions or mining:', error);
-  }
-};
-
-simulateTransactionsAndMining();
+PubNubService.subscribeToChannel('TRANSACTION');
 
 const app = express();
 
@@ -105,4 +56,4 @@ app.listen(nodePort, () =>
   )
 );
 
-export { blockchain, minerWallet };
+export { blockchain, minerWallet, transactionPool };
