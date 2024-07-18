@@ -1,5 +1,7 @@
 import Transaction from '../models/Transaction.mjs';
 import Wallet from '../models/Wallet.mjs';
+import PubNubService from '../pubnubServer.mjs';
+import { blockchain, transactionPool } from '../server.mjs';
 
 // @desc    Get all transactions
 // @route   GET /api/v1/transactions
@@ -17,27 +19,37 @@ export const getTransactions = async (req, res) => {
 // @route   POST /api/v1/transactions
 // @access  Private
 export const createTransaction = async (req, res) => {
+  const { recipient, amount } = req.body;
+  const senderWallet = new Wallet(req.user);
+
   try {
-    const { sender, recipient, amount } = req.body;
-
-    const senderWallet = await Wallet.findOne({ publicKey: sender });
-    const recipientWallet = await Wallet.findOne({ publicKey: recipient });
-
-    if (!senderWallet || !recipientWallet) {
-      return res
-        .status(400)
-        .json({ success: false, message: 'Invalid wallets' });
-    }
-
     const transaction = senderWallet.createTransaction({
-      recipient: recipientWallet.publicKey,
+      recipient,
       amount,
-      blockchain: req.blockchain,
+      blockchain,
     });
+
+    transactionPool.setTransaction(transaction);
+    PubNubService.publishToChannel('TRANSACTION', transaction);
 
     await transaction.save();
 
-    res.status(201).json({ success: true, data: transaction });
+    res.status(201).json({ success: true, transaction });
+  } catch (error) {
+    res.status(400).json({ success: false, message: error.message });
+  }
+};
+
+export const mineTransactions = async (req, res) => {
+  try {
+    const newBlock = await miner.mineTransactions();
+
+    if (newBlock) {
+      PubNubService.publishToChannel('BLOCKCHAIN', newBlock);
+      res.status(201).json({ success: true, block: newBlock });
+    } else {
+      res.status(400).json({ success: false, message: 'No block was mined' });
+    }
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
