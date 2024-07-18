@@ -43,15 +43,45 @@ export const fetchTransactions = async () => {
   }
 };
 
-export const createTransaction = async (transaction) => {
-  const response = await fetch(`${BASE_URL}/transactions`, {
+export const createTransaction = async ({ recipient, amount }) => {
+  const response = await fetch(`${BASE_URL}/transactions/create`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${localStorage.getItem('token')}`,
     },
-    body: JSON.stringify(transaction),
+    body: JSON.stringify({ recipient, amount }),
   });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.message || 'Failed to create transaction');
+  }
+
+  const result = await response.json();
+  return result.data; // Return the data object
+};
+
+export const mineTransactions = async () => {
+  const response = await fetch(`${BASE_URL}/blockchain/mine`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${localStorage.getItem('token')}`,
+    },
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    console.error('Error response:', errorData);
+    throw new Error(errorData.message || 'Failed to mine transactions');
+  }
+
+  return response.json();
+};
+
+export const fetchBlocks = async () => {
+  const response = await fetch(`${BASE_URL}/blockchain`);
   const data = await response.json();
   if (data.success) {
     return data.data;

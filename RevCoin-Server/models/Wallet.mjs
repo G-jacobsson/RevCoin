@@ -68,8 +68,6 @@ export default class Wallet {
       outputMap: transaction.outputMap,
     });
 
-    transaction.save();
-
     return transaction;
   }
 }

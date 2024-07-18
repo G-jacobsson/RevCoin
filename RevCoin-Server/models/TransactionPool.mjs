@@ -6,7 +6,7 @@ export default class TransactionPool {
   }
 
   setTransaction(transaction) {
-    this.transactionMap[transaction.transactionId] = transaction;
+    this.transactionMap[transaction._id] = transaction;
   }
 
   existingTransaction({ inputAddress }) {
@@ -30,10 +30,14 @@ export default class TransactionPool {
       const block = chain[i];
 
       for (let transaction of block.data) {
-        if (this.transactionMap[transaction.id]) {
-          delete this.transactionMap[transaction.id];
+        if (this.transactionMap[transaction._id]) {
+          delete this.transactionMap[transaction._id];
         }
       }
     }
+  }
+
+  getTransactionList() {
+    return Object.values(this.transactionMap);
   }
 }

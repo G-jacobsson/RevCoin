@@ -56,4 +56,4 @@ app.listen(nodePort, () =>
   )
 );
 
-export { blockchain, minerWallet, transactionPool };
+export { blockchain, minerWallet, transactionPool, miner };

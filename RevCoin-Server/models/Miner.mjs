@@ -24,7 +24,9 @@ export default class Miner {
 
     PubNubService.publishToChannel('BLOCKCHAIN', block);
 
-    this.transactionPool.clear();
+    this.transactionPool.clearBlockchainTransactions({
+      chain: this.blockchain.chain,
+    });
 
     return block;
   }

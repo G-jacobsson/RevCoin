@@ -1,4 +1,3 @@
-// middleware/authMiddleware.mjs
 import jwt from 'jsonwebtoken';
 import User from '../models/User.mjs';
 
