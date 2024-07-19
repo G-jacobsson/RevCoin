@@ -25,12 +25,6 @@ const userSchema = new mongoose.Schema({
     minlength: 6,
     select: false,
   },
-  // resetPasswordToken: String,
-  // resetPasswordTokenExpire: Date,
-  // createdAt: {
-  //   type: Date,
-  //   default: Date.now,
-  // },
   wallet: {
     publicKey: {
       type: String,
@@ -65,18 +59,5 @@ userSchema.methods.generateToken = function () {
     expiresIn: process.env.JWT_TTL,
   });
 };
-
-// userSchema.methods.createResetPasswordToken = function () {
-//   const resetToken = crypto.randomBytes(20).toString('hex');
-
-//   this.resetPasswordToken = crypto
-//     .createHash('sha256')
-//     .update(resetToken)
-//     .digest('hex');
-
-//   this.resetPasswordTokenExpire = Date.now() + 10 * 60 * 1000;
-
-//   return resetToken;
-// };
 
 export default mongoose.model('User', userSchema);
