@@ -35,14 +35,29 @@ export const createTransaction = async (req, res) => {
 
   try {
     const senderWallet = new Wallet(user);
+
+    console.log(`Before transaction, user balance: ${senderWallet.balance}`);
+
+    // Recalculate the balance before creating the transaction
+    senderWallet.balance = Wallet.calculateBalance({
+      blockchain,
+      transactionPool,
+      address: senderWallet.publicKey,
+    });
+
+    console.log(`Recalculated balance: ${senderWallet.balance}`);
+
     const transaction = senderWallet.createTransaction({
       recipient,
       amount,
       blockchain,
+      transactionPool,
     });
 
-    user.wallet.balance = senderWallet.balance;
+    user.wallet.balance = senderWallet.balance - amount;
     await user.save();
+
+    console.log(`After transaction, user balance: ${user.wallet.balance}`);
 
     await transaction.save();
 
@@ -55,6 +70,7 @@ export const createTransaction = async (req, res) => {
       data: transaction,
     });
   } catch (error) {
+    console.error(`Error creating transaction: ${error.message}`);
     res.status(400).json({ success: false, message: error.message });
   }
 };
