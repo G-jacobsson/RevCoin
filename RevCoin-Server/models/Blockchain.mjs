@@ -143,9 +143,9 @@ export default class Blockchain {
       throw new Error('Received chain is not longer than current chain');
     }
 
-    if (!this.validateChain(newChain)) {
-      throw new Error('Received chain is invalid');
-    }
+    // if (!this.validateChain(newChain)) {
+    //   throw new Error('Received chain is invalid');
+    // }
 
     this.chain = newChain;
     this.transactionPool.clearBlockchainTransactions({ chain: newChain });

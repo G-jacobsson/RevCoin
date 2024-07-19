@@ -64,7 +64,15 @@ const TransactionsPage = () => {
         recipient,
         amount,
       });
-      setTransactions([...transactions, newTransaction]);
+      setTransactions((prevTransactions) => {
+        const transactionExists = prevTransactions.some(
+          (tx) => tx._id === newTransaction._id
+        );
+        if (!transactionExists) {
+          return [...prevTransactions, newTransaction];
+        }
+        return prevTransactions;
+      });
       setRecipient('');
       setAmount('');
       setMessage('Transaction created and added to the transaction pool.');
@@ -84,6 +92,10 @@ const TransactionsPage = () => {
         setMessage('Transactions in the transaction pool have been mined.');
         setTransactions([]);
         setBlocks([]);
+
+        // Refetch transactions and blocks to update the state
+        await handleFetchTransactions();
+        await handleFetchBlocks();
       } else {
         setMessage('No valid transactions to mine.');
       }
@@ -99,113 +111,117 @@ const TransactionsPage = () => {
   };
 
   return (
-    <div className="transaction-page">
-      <h1>RevCoin Transactions</h1>
-      <button
-        onClick={handleLogout}
-        className="logout-button"
-      >
-        Logout
-      </button>
-      <form
-        onSubmit={handleSubmit}
-        className="transaction-form"
-      >
-        <label htmlFor="recipient">Recipient</label>
-        <input
-          id="recipient"
-          type="text"
-          placeholder="Recipient's Public Key"
-          value={recipient}
-          onChange={(e) => setRecipient(e.target.value)}
-          required
-        />
-        <label htmlFor="amount">Amount</label>
-        <input
-          id="amount"
-          type="number"
-          placeholder="Amount to Transfer"
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
-          required
-        />
-        <button type="submit">Create Transaction</button>
-      </form>
-      <button
-        onClick={handleMineTransactions}
-        className="mine-button"
-      >
-        Mine Transactions
-      </button>
-      <button
-        onClick={handleFetchTransactions}
-        className="list-button"
-      >
-        List Transactions
-      </button>
-      <button
-        onClick={handleFetchBlocks}
-        className="list-button"
-      >
-        List Blocks
-      </button>
-      {message && <p className="message">{message}</p>}
-      {error && <p className="error">{error}</p>}
-      {activeSection === 'transactions' && transactions.length > 0 && (
-        <ul className="transaction-list">
-          {transactions.map((transaction) => (
-            <li
-              key={transaction._id}
-              className="transaction-item"
-            >
-              <div className="transaction-details">
-                <div className="wallet-address">
-                  Sender: {transaction.sender || 'Unknown'}
+    <div className="transaction-page-wrapper">
+      <div className="transaction-page">
+        <h1>RevCoin Transactions</h1>
+        <button
+          onClick={handleLogout}
+          className="logout-button"
+        >
+          Logout
+        </button>
+        <form
+          onSubmit={handleSubmit}
+          className="transaction-form"
+        >
+          <label htmlFor="recipient">Recipient</label>
+          <input
+            id="recipient"
+            type="text"
+            placeholder="Recipient's Public Key"
+            value={recipient}
+            onChange={(e) => setRecipient(e.target.value)}
+            required
+          />
+          <label htmlFor="amount">Amount</label>
+          <input
+            id="amount"
+            type="number"
+            placeholder="Amount to Transfer"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+            required
+          />
+          <button type="submit">Create Transaction</button>
+        </form>
+        <button
+          onClick={handleMineTransactions}
+          className="mine-button"
+        >
+          Mine Transactions
+        </button>
+        <button
+          onClick={handleFetchTransactions}
+          className="list-button"
+        >
+          List Transactions
+        </button>
+        <button
+          onClick={handleFetchBlocks}
+          className="list-button"
+        >
+          List Blocks
+        </button>
+        {message && <p className="message">{message}</p>}
+        {error && <p className="error">{error}</p>}
+        {activeSection === 'transactions' && transactions.length > 0 && (
+          <ul className="transaction-list">
+            {transactions.map((transaction) => (
+              <li
+                key={transaction._id}
+                className="transaction-item"
+              >
+                <div className="transaction-details">
+                  <div className="wallet-address">
+                    Sender: {transaction.sender || 'Unknown'}
+                  </div>
+                  <div className="wallet-address">
+                    Recipient: {transaction.recipient}
+                  </div>
                 </div>
-                <div className="wallet-address">
-                  Recipient: {transaction.recipient}
+                <div className="amounts">
+                  <span className="sent">Sent: {transaction.amount}</span>
+                  <span className="remaining">
+                    Remaining:{' '}
+                    {transaction.inputMap
+                      ? transaction.inputMap.amount - transaction.amount
+                      : 'N/A'}
+                  </span>
                 </div>
-              </div>
-              <div className="amounts">
-                <span className="sent">Sent: {transaction.amount}</span>
-                <span className="remaining">
-                  Remaining:{' '}
-                  {transaction.inputMap
-                    ? transaction.inputMap.amount - transaction.amount
-                    : 'N/A'}
-                </span>
-              </div>
-            </li>
-          ))}
-        </ul>
-      )}
-      {activeSection === 'blocks' && blocks.length > 0 && (
-        <ul className="block-list">
-          {blocks.map((block) => (
-            <li
-              key={block._id}
-              className="block-item"
-            >
-              <div>Index: {block.index}</div>
-              <div>Hash: {block.hash}</div>
-              <div>Previous Hash: {block.previousHash}</div>
-              <div>Timestamp: {new Date(block.timestamp).toLocaleString()}</div>
-              <div>Nonce: {block.nonce}</div>
-              <div>Difficulty: {block.difficulty}</div>
-              <div>Data:</div>
-              <ul>
-                {block.data.map((dataItem, index) => (
-                  <li key={index}>
-                    {typeof dataItem === 'object'
-                      ? JSON.stringify(dataItem)
-                      : dataItem}
-                  </li>
-                ))}
-              </ul>
-            </li>
-          ))}
-        </ul>
-      )}
+              </li>
+            ))}
+          </ul>
+        )}
+        {activeSection === 'blocks' && blocks.length > 0 && (
+          <ul className="block-list">
+            {blocks.map((block) => (
+              <li
+                key={block._id}
+                className="block-item"
+              >
+                <div>Index: {block.index}</div>
+                <div>Hash: {block.hash}</div>
+                <div>Previous Hash: {block.previousHash}</div>
+                <div>
+                  Timestamp: {new Date(block.timestamp).toLocaleString()}
+                </div>
+                <div>Nonce: {block.nonce}</div>
+                <div>Difficulty: {block.difficulty}</div>
+                <div>Data:</div>
+                <ul>
+                  {block.data.map((dataItem, index) => (
+                    <li key={index}>
+                      {typeof dataItem === 'object'
+                        ? JSON.stringify(dataItem)
+                        : dataItem}
+                    </li>
+                  ))}
+                </ul>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
     </div>
   );
 };

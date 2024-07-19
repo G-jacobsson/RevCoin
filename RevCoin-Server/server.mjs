@@ -80,11 +80,29 @@ app.use(
   transactionRouter
 );
 
-app.listen(nodePort, () =>
+const syncBlockchain = async () => {
+  if (process.env.DYNAMIC_NODE_PORT === 'true') {
+    try {
+      const response = await fetch(`${PRIMARY_NODE}/api/v1/RevCoin/blockchain`);
+      const data = await response.json();
+      if (data) {
+        blockchain.syncChains(data.data);
+        console.log('Blockchain synchronized with primary node');
+      } else {
+        console.error('Failed to synchronize blockchain');
+      }
+    } catch (error) {
+      console.error('Error synchronizing blockchain:', error.message);
+    }
+  }
+};
+
+app.listen(nodePort, async () => {
   console.log(
     `Server is running on port: ${nodePort} in ${process.env.NODE_ENV} mode`
       .bgGreen
-  )
-);
+  );
+  await syncBlockchain();
+});
 
 export { blockchain, transactionPool, miner };

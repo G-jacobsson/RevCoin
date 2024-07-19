@@ -30,36 +30,39 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="login-page">
-      <h2>Login</h2>
-      <form onSubmit={handleLogin}>
-        <div className="form-group">
-          <label>Email:</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </div>
-        <div className="form-group">
-          <label>Password:</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
-        <button type="submit">Login</button>
-        {error && <p className="error">{error}</p>}
-      </form>
-      <button
-        onClick={handleRegisterRedirect}
-        className="register-button"
-      >
-        Not registered? Sign up here
-      </button>
+    <div className="page-container">
+      <h1 className="title">RevCoin</h1>
+      <div className="login-page">
+        <h2>Login</h2>
+        <form onSubmit={handleLogin}>
+          <div className="form-group">
+            <label>Email:</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label>Password:</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
+          <button type="submit">Login</button>
+          {error && <p className="error">{error}</p>}
+        </form>
+        <button
+          onClick={handleRegisterRedirect}
+          className="register-button"
+        >
+          Not registered? Sign up here
+        </button>
+      </div>
     </div>
   );
 };

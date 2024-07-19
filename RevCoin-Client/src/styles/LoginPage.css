@@ -1,9 +1,24 @@
+.page-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background-color: #e8f5e9;
+}
+
+.title {
+  font-size: 3em;
+  color: #43a047;
+  margin-bottom: 20px;
+}
+
 .login-page {
-  max-width: 400px;
-  margin: 0 auto;
+  width: 400px;
   padding: 20px;
   border: 1px solid #ddd;
   border-radius: 5px;
+  background-color: #f7f9fc;
 }
 
 .login-page h2 {
