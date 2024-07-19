@@ -15,13 +15,11 @@ const LoginPage = () => {
 
     try {
       const data = await login(email, password);
-      console.log('Login success', data);
       localStorage.setItem('token', data.token);
       localStorage.setItem('wallet', JSON.stringify(data.wallet));
       navigate('/transactions');
     } catch (error) {
       setError(error.message);
-      console.error('Login Error', error);
     }
   };
 

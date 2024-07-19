@@ -11,7 +11,6 @@ export default class Miner {
     const validTransactions = this.transactionPool.validTransactions();
 
     if (validTransactions.length === 0) {
-      console.log('No valid transactions to mine');
       return { success: false, message: 'No valid transactions to mine' };
     }
 

@@ -21,15 +21,10 @@ export default class Wallet {
     let balance = +process.env.INITIAL_WALLET_BALANCE;
     let hasConductedTransaction = false;
 
-    console.log(`Calculating balance for address: ${address}`);
-
     for (let i = blockchain.chain.length - 1; i > 0; i--) {
       const block = blockchain.chain[i];
-      console.log(`Checking block: ${block.hash}`);
 
       for (let transaction of block.data) {
-        console.log(`Checking transaction: ${transaction._id}`);
-
         if (transaction.inputMap && transaction.inputMap.address === address) {
           hasConductedTransaction = true;
         }
@@ -37,7 +32,6 @@ export default class Wallet {
         const addressOutput = transaction.outputMap.get(address);
         if (addressOutput !== undefined) {
           balance = addressOutput;
-          console.log(`Found output for address ${address}: ${addressOutput}`);
         }
       }
 
@@ -47,8 +41,6 @@ export default class Wallet {
     }
 
     for (let transaction of Object.values(transactionPool.transactionMap)) {
-      console.log(`Checking transaction in pool: ${transaction._id}`);
-
       if (transaction.inputMap && transaction.inputMap.address === address) {
         hasConductedTransaction = true;
       }
@@ -56,13 +48,9 @@ export default class Wallet {
       const addressOutput = transaction.outputMap.get(address);
       if (addressOutput !== undefined) {
         balance = addressOutput;
-        console.log(
-          `Found output in pool for address ${address}: ${addressOutput}`
-        );
       }
     }
 
-    console.log(`Final calculated balance for address ${address}: ${balance}`);
     return balance;
   }
 
@@ -71,17 +59,11 @@ export default class Wallet {
   }
 
   createTransaction({ recipient, amount, blockchain, transactionPool }) {
-    console.log(
-      `Creating transaction from ${this.publicKey} to ${recipient} for amount ${amount}`
-    );
-
     this.balance = Wallet.calculateBalance({
       blockchain,
       transactionPool,
       address: this.publicKey,
     });
-
-    console.log(`Balance after calculation: ${this.balance}`);
 
     if (amount > this.balance) {
       throw new Error('Amount exceeds balance');
@@ -103,11 +85,6 @@ export default class Wallet {
       outputMap: transaction.outputMap,
     });
 
-    console.log(
-      `Transaction created with outputMap: ${JSON.stringify([
-        ...outputMap.entries(),
-      ])}`
-    );
     return transaction;
   }
 }

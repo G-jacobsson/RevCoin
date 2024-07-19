@@ -88,6 +88,7 @@ const syncBlockchain = async () => {
       if (data) {
         blockchain.syncChains(data.data);
         console.log('Blockchain synchronized with primary node');
+        console.log('Blockchain:', blockchain.chain);
       } else {
         console.error('Failed to synchronize blockchain');
       }

@@ -68,11 +68,6 @@ transactionSchema.statics.validateTransaction = function (transaction) {
     0
   );
 
-  console.log(`Validating transaction from ${address}:`);
-  console.log(`Amount: ${amount}`);
-  console.log(`Output Map:`, Array.from(outputMap.entries()));
-  console.log(`Output Total: ${outputTotal}`);
-
   if (amount !== outputTotal) {
     console.error(
       `Invalid transaction from ${address}: amount does not equal output total.`

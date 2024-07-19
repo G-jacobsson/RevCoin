@@ -32,7 +32,6 @@ const TransactionsPage = () => {
       }
     } catch (error) {
       setError('Failed to fetch transactions');
-      console.error('Failed to fetch transactions:', error.message);
     }
   };
 
@@ -50,7 +49,6 @@ const TransactionsPage = () => {
       }
     } catch (error) {
       setError('Failed to fetch blocks');
-      console.error('Failed to fetch blocks:', error.message);
     }
   };
 
@@ -78,7 +76,6 @@ const TransactionsPage = () => {
       setMessage('Transaction created and added to the transaction pool.');
     } catch (error) {
       setError('Failed to create transaction');
-      console.error('Failed to create transaction:', error.message);
     }
   };
 
@@ -101,7 +98,6 @@ const TransactionsPage = () => {
       }
     } catch (error) {
       setError('Failed to mine transactions');
-      console.error('Failed to mine transactions:', error.message);
     }
   };
 

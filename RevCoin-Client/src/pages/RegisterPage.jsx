@@ -16,11 +16,9 @@ const RegisterPage = () => {
 
     try {
       const data = await register(name, email, password);
-      console.log('Registration successful', data);
       navigate('/');
     } catch (err) {
       setError(err.message);
-      console.error('Registration error', err);
     }
   };
 
