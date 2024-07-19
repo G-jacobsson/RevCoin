@@ -99,8 +99,13 @@ export default class Blockchain {
     };
 
     const newBlock = new Block(newBlockData);
-    await newBlock.save();
 
+    const newChain = [...this.chain, newBlock];
+    if (!this.validateChain(newChain)) {
+      throw new Error('Invalid chain');
+    }
+
+    await newBlock.save();
     this.chain.push(newBlock);
     return newBlock;
   }
@@ -143,15 +148,42 @@ export default class Blockchain {
       throw new Error('Received chain is not longer than current chain');
     }
 
-    // if (!this.validateChain(newChain)) {
-    //   throw new Error('Received chain is invalid');
-    // }
+    if (!this.validateChain(newChain)) {
+      throw new Error('Received chain is invalid');
+    }
 
     this.chain = newChain;
     this.transactionPool.clearBlockchainTransactions({ chain: newChain });
   }
 
   validateChain(chain) {
-    // Implement validation logic for the entire chain
+    if (JSON.stringify(chain[0]) !== JSON.stringify(this.chain[0])) {
+      return false;
+    }
+
+    for (let i = 1; i < chain.length; i++) {
+      const { index, previousHash, timestamp, data, nonce, difficulty, hash } =
+        chain[i];
+      const actualLastHash = chain[i - 1].hash;
+
+      if (previousHash !== actualLastHash) {
+        return false;
+      }
+
+      const validatedHash = generateHash(
+        index,
+        previousHash,
+        timestamp,
+        JSON.stringify(data),
+        nonce,
+        difficulty
+      );
+
+      if (hash !== validatedHash) {
+        return false;
+      }
+    }
+
+    return true;
   }
 }
