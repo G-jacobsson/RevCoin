@@ -1,5 +1,13 @@
 const BASE_URL = 'http://localhost:5001/api/v1/RevCoin';
 
+const getAuthHeaders = () => {
+  const token = localStorage.getItem('token');
+  return {
+    'Content-Type': 'application/json',
+    Authorization: `Bearer ${token}`,
+  };
+};
+
 export const register = async (name, email, password, role = 'user') => {
   const response = await fetch(`${BASE_URL}/auth/register`, {
     method: 'POST',
@@ -34,7 +42,9 @@ export const login = async (email, password) => {
 };
 
 export const fetchTransactions = async () => {
-  const response = await fetch(`${BASE_URL}/transactions`);
+  const response = await fetch(`${BASE_URL}/transactions`, {
+    headers: getAuthHeaders(),
+  });
   const data = await response.json();
   if (data.success) {
     return data.data;
@@ -46,10 +56,7 @@ export const fetchTransactions = async () => {
 export const createTransaction = async ({ recipient, amount }) => {
   const response = await fetch(`${BASE_URL}/transactions/create`, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${localStorage.getItem('token')}`,
-    },
+    headers: getAuthHeaders(),
     body: JSON.stringify({ recipient, amount }),
   });
 
@@ -59,16 +66,13 @@ export const createTransaction = async ({ recipient, amount }) => {
   }
 
   const result = await response.json();
-  return result.data; // Return the data object
+  return result.data;
 };
 
 export const mineTransactions = async () => {
   const response = await fetch(`${BASE_URL}/blockchain/mine`, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${localStorage.getItem('token')}`,
-    },
+    headers: getAuthHeaders(),
   });
 
   if (!response.ok) {
@@ -81,7 +85,9 @@ export const mineTransactions = async () => {
 };
 
 export const fetchBlocks = async () => {
-  const response = await fetch(`${BASE_URL}/blockchain`);
+  const response = await fetch(`${BASE_URL}/blockchain`, {
+    headers: getAuthHeaders(),
+  });
   const data = await response.json();
   if (data.success) {
     return data.data;

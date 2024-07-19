@@ -12,10 +12,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Email is required'],
     unique: true,
-    match: [
-      /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
-      'Please add a valid email',
-    ],
+    match: [/^\w+([\.-]?\w+)*@\w+(\.\w{2,3})+$/, 'Please add a valid email'],
   },
   role: {
     type: String,
@@ -28,11 +25,25 @@ const userSchema = new mongoose.Schema({
     minlength: 6,
     select: false,
   },
-  resetPasswordToken: String,
-  resetPasswordTokenExpire: Date,
-  createdAt: {
-    type: Date,
-    default: Date.now,
+  // resetPasswordToken: String,
+  // resetPasswordTokenExpire: Date,
+  // createdAt: {
+  //   type: Date,
+  //   default: Date.now,
+  // },
+  wallet: {
+    publicKey: {
+      type: String,
+      required: true,
+    },
+    privateKey: {
+      type: String,
+      required: true,
+    },
+    balance: {
+      type: Number,
+      default: +process.env.INITIAL_WALLET_BALANCE,
+    },
   },
 });
 
@@ -55,17 +66,17 @@ userSchema.methods.generateToken = function () {
   });
 };
 
-userSchema.methods.createResetPasswordToken = function () {
-  const resetToken = crypto.randomBytes(20).toString('hex');
+// userSchema.methods.createResetPasswordToken = function () {
+//   const resetToken = crypto.randomBytes(20).toString('hex');
 
-  this.resetPasswordToken = crypto
-    .createHash('sha256')
-    .update(resetToken)
-    .digest('hex');
+//   this.resetPasswordToken = crypto
+//     .createHash('sha256')
+//     .update(resetToken)
+//     .digest('hex');
 
-  this.resetPasswordTokenExpire = Date.now() + 10 * 60 * 1000;
+//   this.resetPasswordTokenExpire = Date.now() + 10 * 60 * 1000;
 
-  return resetToken;
-};
+//   return resetToken;
+// };
 
 export default mongoose.model('User', userSchema);

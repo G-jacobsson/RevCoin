@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   fetchTransactions,
   createTransaction,
@@ -15,6 +16,7 @@ const TransactionsPage = () => {
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [activeSection, setActiveSection] = useState('');
+  const navigate = useNavigate();
 
   const handleFetchTransactions = async () => {
     setActiveSection('transactions');
@@ -65,6 +67,7 @@ const TransactionsPage = () => {
       setTransactions([...transactions, newTransaction]);
       setRecipient('');
       setAmount('');
+      setMessage('Transaction created and added to the transaction pool.');
     } catch (error) {
       setError('Failed to create transaction');
       console.error('Failed to create transaction:', error.message);
@@ -90,9 +93,20 @@ const TransactionsPage = () => {
     }
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    navigate('/');
+  };
+
   return (
     <div className="transaction-page">
       <h1>RevCoin Transactions</h1>
+      <button
+        onClick={handleLogout}
+        className="logout-button"
+      >
+        Logout
+      </button>
       <form
         onSubmit={handleSubmit}
         className="transaction-form"

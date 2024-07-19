@@ -3,6 +3,26 @@
   margin: 0 auto;
   padding: 20px;
   text-align: center;
+  position: relative;
+}
+
+.logout-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 5px 10px;
+  font-size: 0.8em;
+  background-color: #f44336;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  width: auto;
+  white-space: nowrap;
+}
+
+.logout-button:hover {
+  background-color: #e53935;
 }
 
 .transaction-form {
@@ -57,6 +77,7 @@
   border: 1px solid #ddd;
   border-radius: 5px;
   text-align: left;
+  word-break: break-all;
 }
 
 .transaction-details {

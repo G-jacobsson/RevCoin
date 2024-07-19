@@ -1,4 +1,5 @@
 import User from '../models/User.mjs';
+import Wallet from '../models/Wallet.mjs';
 
 // @desc    Register user
 // @route   POST /api/v1/auth/register
@@ -7,11 +8,17 @@ export const register = async (req, res) => {
   try {
     const { name, email, password, role } = req.body;
 
+    const wallet = new Wallet();
     const user = await User.create({
       name,
       email,
       password,
       role,
+      wallet: {
+        publicKey: wallet.publicKey,
+        privateKey: wallet.keyPair.getPrivate('hex'),
+        balance: wallet.balance,
+      },
     });
 
     sendTokenResponse(user, 200, res);

@@ -10,8 +10,9 @@ import transactionRouter from './routes/transaction-routes.mjs';
 import Wallet from './models/Wallet.mjs';
 import TransactionPool from './models/TransactionPool.mjs';
 import Miner from './models/Miner.mjs';
-import Transaction from './models/Transaction.mjs';
 import PubNubService from './pubnubServer.mjs';
+import User from './models/User.mjs';
+import jwt from 'jsonwebtoken';
 
 dotenv.config({ path: './config/config.env' });
 
@@ -21,12 +22,10 @@ const blockchain = new Blockchain();
 await blockchain.initialize();
 
 const transactionPool = new TransactionPool();
-const minerWallet = new Wallet();
 
 const miner = new Miner({
   blockchain,
   transactionPool,
-  wallet: minerWallet,
 });
 
 PubNubService.subscribeToChannel('BLOCKCHAIN');
@@ -45,9 +44,41 @@ let nodePort =
     ? PORT + Math.floor(Math.random() * 1000)
     : PORT;
 
+const fetchUserAndInitializeWallet = async (req, res, next) => {
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+      return res
+        .status(401)
+        .json({ success: false, message: 'No token provided' });
+    }
+
+    const token = authHeader.split(' ')[1];
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findById(decoded.id);
+
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: 'User not found' });
+    }
+
+    req.user = user;
+    req.wallet = new Wallet(user);
+    next();
+  } catch (error) {
+    console.error('Error initializing wallet:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
+
 app.use('/api/v1/RevCoin/blockchain', blockchainRouter);
 app.use('/api/v1/RevCoin/auth', authRouter);
-app.use('/api/v1/RevCoin/transactions', transactionRouter);
+app.use(
+  '/api/v1/RevCoin/transactions',
+  fetchUserAndInitializeWallet,
+  transactionRouter
+);
 
 app.listen(nodePort, () =>
   console.log(
@@ -56,4 +87,4 @@ app.listen(nodePort, () =>
   )
 );
 
-export { blockchain, minerWallet, transactionPool, miner };
+export { blockchain, transactionPool, miner };

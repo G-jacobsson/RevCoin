@@ -2,9 +2,15 @@ import { createEllipticHash, generateHash } from '../utils/cipherHash.mjs';
 import Transaction from './Transaction.mjs';
 
 export default class Wallet {
-  constructor() {
-    this.balance = +process.env.INITIAL_WALLET_BALANCE;
-    this.keyPair = createEllipticHash.genKeyPair();
+  constructor(user) {
+    if (!user.wallet) {
+      throw new Error('User does not have a wallet');
+    }
+    this.balance = user.wallet.balance;
+    this.keyPair = createEllipticHash.keyFromPrivate(
+      user.wallet.privateKey,
+      'hex'
+    );
     this.publicKey = this.keyPair.getPublic().encode('hex');
   }
 

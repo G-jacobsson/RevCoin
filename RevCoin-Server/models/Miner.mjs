@@ -1,26 +1,26 @@
-import { minerWallet } from '../server.mjs';
 import Transaction from './Transaction.mjs';
 import PubNubService from '../pubnubServer.mjs';
 
 export default class Miner {
-  constructor({ blockchain, transactionPool, wallet }) {
+  constructor({ blockchain, transactionPool }) {
     this.blockchain = blockchain;
     this.transactionPool = transactionPool;
-    this.minerWallet = wallet;
   }
 
-  async mineTransactions() {
+  async mineTransactions(user) {
     const validTransactions = this.transactionPool.validTransactions();
 
     if (validTransactions.length === 0) {
       console.log('No valid transactions to mine');
-      return;
+      return { success: false, message: 'No valid transactions to mine' };
     }
 
-    const rewardTransaction = this.createRewardTransaction();
+    const rewardTransaction = this.createRewardTransaction(user.wallet);
     validTransactions.push(rewardTransaction);
 
     const block = await this.blockchain.addBlock(validTransactions);
+
+    await block.save();
 
     PubNubService.publishToChannel('BLOCKCHAIN', block);
 
@@ -28,13 +28,13 @@ export default class Miner {
       chain: this.blockchain.chain,
     });
 
-    return block;
+    return { success: true, block };
   }
 
-  createRewardTransaction() {
+  createRewardTransaction(wallet) {
     const rewardTransaction = new Transaction({
       sender: 'MINER_REWARD',
-      recipient: minerWallet.publicKey,
+      recipient: wallet.publicKey,
       amount: 50,
     });
 
