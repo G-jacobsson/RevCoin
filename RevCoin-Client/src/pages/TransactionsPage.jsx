@@ -90,7 +90,6 @@ const TransactionsPage = () => {
         setTransactions([]);
         setBlocks([]);
 
-        // Refetch transactions and blocks to update the state
         await handleFetchTransactions();
         await handleFetchBlocks();
       } else {
