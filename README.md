@@ -64,11 +64,13 @@ cd RevCoin-Server
 npm run dev-node
 ```
 
-<span style="color:red">
+$$
+{\color{red}
 Attention! New node will sync with primary node on startup and also following transactions + blocks made on network.
 
 Dropdown with nodes in the works but for now check output in terminal.
-</span>
+}
+$$
 
 ## API Endpoints
 
