@@ -65,12 +65,12 @@ npm run dev-node
 ```
 
 $$
-{\color{red}
-Attention! New node will sync with primary node on startup and also following transactions + blocks made on network.
+{\color{red}Attention!}
+$$
+
+New node will sync with primary node on startup and also following transactions + blocks made on network.
 
 Dropdown with nodes in the works but for now check output in terminal.
-}
-$$
 
 ## API Endpoints
 
