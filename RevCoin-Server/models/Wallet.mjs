@@ -75,9 +75,7 @@ export default class Wallet {
       amount,
     });
 
-    const outputMap = new Map();
-    outputMap.set(recipient, amount);
-    outputMap.set(this.publicKey, this.balance - amount);
+    const outputMap = transaction.createOutputMap(this);
     transaction.outputMap = outputMap;
 
     transaction.inputMap = transaction.createInputMap({

@@ -39,10 +39,10 @@ const transactionSchema = new mongoose.Schema({
   },
 });
 
-transactionSchema.methods.createOutputMap = function () {
+transactionSchema.methods.createOutputMap = function (senderWallet) {
   const outputMap = new Map();
   outputMap.set(this.recipient, this.amount);
-  outputMap.set(this.sender, this.inputMap.amount - this.amount);
+  outputMap.set(this.sender, senderWallet.balance - this.amount);
   return outputMap;
 };
 
