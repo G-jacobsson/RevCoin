@@ -144,7 +144,7 @@ export default class Blockchain {
   }
 
   syncChains(newChain) {
-    if (newChain.length <= this.chain.length) {
+    if (newChain.length < this.chain.length) {
       throw new Error('Received chain is not longer than current chain');
     }
 
