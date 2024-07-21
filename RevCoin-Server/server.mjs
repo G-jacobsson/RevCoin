@@ -12,7 +12,6 @@ import Blockchain from './models/Blockchain.mjs';
 import blockchainRouter from './routes/blockchain-routes.mjs';
 import authRouter from './routes/auth-routes.mjs';
 import transactionRouter from './routes/transaction-routes.mjs';
-import Wallet from './models/Wallet.mjs';
 import TransactionPool from './models/TransactionPool.mjs';
 import Miner from './models/Miner.mjs';
 import PubNubService from './pubnubServer.mjs';
