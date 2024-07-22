@@ -69,7 +69,7 @@ transactionSchema.statics.validateTransaction = function (transaction) {
   );
 
   if (amount !== outputTotal) {
-    console.error(
+    throw new Error(
       `Invalid transaction from ${address}: amount does not equal output total.`
     );
     return false;
@@ -82,7 +82,7 @@ transactionSchema.statics.validateTransaction = function (transaction) {
       signature,
     })
   ) {
-    console.error(`Invalid signature from ${address}.`);
+    throw new Error(`Invalid signature from ${address}.`);
     return false;
   }
 

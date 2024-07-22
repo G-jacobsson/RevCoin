@@ -63,7 +63,7 @@ export const createTransaction = async (req, res) => {
       data: transaction,
     });
   } catch (error) {
-    console.error(`Error creating transaction: ${error.message}`);
+    throw new Error(`Error creating transaction: ${error.message}`);
     res.status(400).json({ success: false, message: error.message });
   }
 };

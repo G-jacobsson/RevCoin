@@ -59,7 +59,7 @@ export const fetchUserAndInitializeWallet = async (req, res, next) => {
     req.wallet = new Wallet(user);
     next();
   } catch (error) {
-    console.error('Error initializing wallet:', error);
+    throw new Error('Error initializing wallet:', error);
     res.status(500).json({ success: false, message: 'Server error' });
   }
 };
