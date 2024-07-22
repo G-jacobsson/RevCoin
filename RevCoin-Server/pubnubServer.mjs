@@ -26,7 +26,7 @@ class PubNubService {
       { channel, message: JSON.stringify(message) },
       (status, response) => {
         if (status.error) {
-          console.log('Publish error: ', status);
+          throw new Error('Publish error: ', status);
         } else {
           console.log('Message Published with timetoken', response.timetoken);
         }
